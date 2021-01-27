@@ -6,12 +6,11 @@ from fake_useragent import UserAgent
 
 import pandas as pd
 
-class Robot:
+class Robot_mm:
 
     def __init__(self):
         self.url_media_beg = "https://mediamarkt.pl/rtv-i-telewizory/telewizory?page="
         self.url_media_base = "https://mediamarkt.pl"
-        #self.respond = requests.get(self.url_media)
 
         # Mozilla/5.0 (iPad; CPU OS 6_0 like Mac OS X) AppleWebKit/536.26 (KHTML, like Gecko) Version/6.0 Mobile/10A5355d Safari/8536.25
         ua = UserAgent()
@@ -69,12 +68,18 @@ class Robot:
             list += [[brand, name, price, size, resolution, resolutionName, matrixType, smartTV]]
         return list
 
-    def CollectData_mm(self) -> pd.DataFrame:
+    def CollectData_mm(self, pages=-1):
         list = []
         if self._Connect_wPage(1) == False:
             return list
-        pages_num = self.GetPagesCount()
-        pages_num = 3
+        if pages == -1:
+            pages_num = self.GetPagesCount()
+        else:
+            max = self.GetPagesCount()
+            if pages + 1 <= max:
+                pages_num = pages + 1
+            else:
+                pages_num = max
 
         for num in range(1, pages_num):
             print(num)
@@ -83,7 +88,7 @@ class Robot:
         return list
 
 if __name__ == '__main__':
-    rb = Robot()
+    rb = Robot_mm()
     x = rb.GetPagesCount()
     print(x)
     list = rb.CollectData_mm()

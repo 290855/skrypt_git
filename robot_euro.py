@@ -22,7 +22,7 @@ from bs4 import BeautifulSoup as bs
 import pandas as pd
 
 
-class Robot:
+class Robot_euro:
 
     def __init__(self):
         self.url_euro_tv_beg = 'https://www.euro.com.pl/telewizory-led-lcd-plazmowe,strona-'
@@ -64,36 +64,40 @@ class Robot:
             norm = str(product_script).replace("\t", "").replace("\n", "")
             data = re.search(r'\((.*?)\)', norm)
 
-            try:
-                js_script = json5.loads(data.group(1))
-                js_prod = json5.loads(js_script['products'])
-                for tv in js_prod:
-                    js = json5.loads(tv)
-                    brand = js['brand']
-                    name = js['name']
-                    price = js['price']
-                    id = js['id']
+            js_script = json5.loads(data.group(1))
+            js_prod = json5.loads(js_script['products'])
+            for tv in js_prod:
+                js = json5.loads(tv)
+                brand = js['brand']
+                name = js['name']
+                price = js['price']
+                id = js['id']
 
-                    # LINK
-                    link = js['link']
+                link = js['link']
+                try:
                     new_resp = requests.get(url=self.url_euro_base + link)
                     soup = bs(new_resp.content, 'html.parser')
-
                     s_size, resolution, matrixType, smartTV = self._GetProductData(soup)
-
                     list.append([brand, name, price, id, s_size, resolution, matrixType, smartTV])
-            except:
-                self.licznik_niedostepnych += 1
+                except:
+                    self.licznik_niedostepnych += 1
         else:
-            pass
+            self.licznik_niedostepnych += 1
 
         return list
 
-    def CollectData_euro(self):
+    def CollectData_euro(self, pages=-1):
         list = []
         if self._Connect_wPage(1) == False:
             return list
-        pages_num = self.GetPagesCount()
+        if pages == -1:
+            pages_num = self.GetPagesCount()
+        else:
+            max = self.GetPagesCount()
+            if pages + 1 <= max:
+                pages_num = pages + 1
+            else:
+                pages_num = max
 
         for num in range(1, pages_num):
             print(num)
@@ -103,7 +107,7 @@ class Robot:
 
 
 if __name__ == '__main__':
-    rb = Robot()
+    rb = Robot_euro()
     list = rb.CollectData_euro()
     print(len(list))
     print(list)

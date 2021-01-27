@@ -1,7 +1,7 @@
 import pandas as pd
 
-from robot_mm_strony import Robot_mm
-from robot_euro_strony_lepsze import Robot_euro
+from robot_mm import Robot_mm
+from robot_euro import Robot_euro
 
 class Controller:
     def __init__(self):
