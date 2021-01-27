@@ -25,18 +25,30 @@ import pandas as pd
 class Robot_euro:
 
     def __init__(self):
+        '''
+        inicjacja danych o sklepie dla bota
+        '''
         self.url_euro_tv_beg = 'https://www.euro.com.pl/telewizory-led-lcd-plazmowe,strona-'
         self.url_euro_tv_end = '.bhtml'
         self.url_euro_base = 'https://www.euro.com.pl'
         self.licznik_niedostepnych = 0
 
     def GetPagesCount(self) -> int:
+        '''
+        Szuka na stronie liczby stron
+        :return: Zwraca liczbę strony z ofertami
+        '''
         page_soup = self.soup_euro.find("div", { "class" : "paging-numbers"})
         page_list = page_soup.find_all("a")
         last_page = len(page_list) - 1
         return int(page_list[last_page].text)
 
     def _Connect_wPage(self, page_num) -> bool:
+        '''
+        Ustanawia połączenie z wybraną stroną z ofertami
+        :param page_num: numer strony z którą nawiązywane jest połączenie
+        :return: zwraca True, jeśli operacja nawiązania połączenia się powiedzie
+        '''
         try:
             self.respond_euro = requests.get(self.url_euro_tv_beg + str(page_num) + self.url_euro_tv_end)
             self.soup_euro = bs(self.respond_euro.content, 'html.parser')
@@ -45,6 +57,11 @@ class Robot_euro:
             return False
 
     def _GetProductData(self, soup):
+        '''
+        Zbiera informacje o konkretnym produkcie
+        :param soup: obiekt BeautifulSoup z kodem strony danego produktu
+        :return: [] !!!!
+        '''
         param_table = soup.find("table", {"class": "description-tech-details js-tech-details"})
 
         params = param_table.find_all("td")
@@ -56,6 +73,11 @@ class Robot_euro:
         return s_size, resolution, matrixType, smartTV
 
     def _CollectDataFromPage(self, num):
+        '''
+        Zbiera informacje o grupie produktów z danej strony
+        :param num: numer strony
+        :return: lista produktów ze strony
+        '''
         list = []
         if self._Connect_wPage(num) == True:
             product_list = self.soup_euro.find("div", {"id": "product-list"})
@@ -87,6 +109,11 @@ class Robot_euro:
         return list
 
     def CollectData_euro(self, pages=-1):
+        '''
+        Metoda główna bota : Zbiera informacje za pomocą pozostałych funkcji
+        :param pages: numer strony do której ma pracować, standarodwo '-1', wtedy pobiera całkowitą liczbę stron
+        :return: zwraca listę
+        '''
         list = []
         if self._Connect_wPage(1) == False:
             return list
@@ -107,8 +134,9 @@ class Robot_euro:
 
 
 if __name__ == '__main__':
+    # testy
     rb = Robot_euro()
-    list = rb.CollectData_euro()
+    list = rb.CollectData_euro(2)
     print(len(list))
     print(list)
 

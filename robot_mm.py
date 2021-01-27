@@ -9,6 +9,9 @@ import pandas as pd
 class Robot_mm:
 
     def __init__(self):
+        '''
+        inicjacja danych o sklepie dla bota
+        '''
         self.url_media_beg = "https://mediamarkt.pl/rtv-i-telewizory/telewizory?page="
         self.url_media_base = "https://mediamarkt.pl"
 
@@ -17,12 +20,21 @@ class Robot_mm:
         self.header = {'User-Agent': str(ua.safari)}
 
     def GetPagesCount(self) -> int:
+        '''
+        Szuka na stronie liczby stron
+        :return: Zwraca liczbę strony z ofertami
+        '''
         self._Connect_wPage(1)
         page_soup = self.soup_mm.find("span", {"class" : "m-pagination_count"})
         pages_num = int(str(page_soup.text).replace("z", ""))
         return pages_num
 
     def _Connect_wPage(self, page_num) -> bool:
+        '''
+        Ustanawia połączenie z wybraną stroną z ofertami
+        :param page_num: numer strony z którą nawiązywane jest połączenie
+        :return: zwraca True, jeśli operacja nawiązania połączenia się powiedzie
+        '''
         try:
             self.respond_mm = requests.get(self.url_media_beg + str(page_num), headers=self.header)
             self.soup_mm = bs(self.respond_mm.content, 'html.parser')
@@ -31,6 +43,11 @@ class Robot_mm:
             return False
 
     def _GetProductData(self, link):
+        '''
+        Zbiera informacje o konkretnym produkcie
+        :param link: link do danego produktu
+        :return: [] !!!!
+        '''
         try:
             new_resp = requests.get(url=link, headers = self.header)
             soup = bs(new_resp.content, 'html.parser')
@@ -53,9 +70,14 @@ class Robot_mm:
 
             return brand, name, price, size, resolution, resolutionName, matrixType, smartTV
         except:
-            pass
+            return [0, 0, 0, 0, 0, 0, 0, 0]
 
     def _CollectDataFromPage(self, num):
+        '''
+        Zbiera informacje o grupie produktów z danej strony
+        :param num: numer strony
+        :return: lista produktów ze strony
+        '''
         list = []
         product_list = self.soup_mm("div", {"class": "b-row clearfix2 b-listing_classic js-eqContainer js-offerBox js-equalHRow"})
         product = product_list[0].find_all("div", {"class": "m-offerBox_content"})
@@ -69,6 +91,11 @@ class Robot_mm:
         return list
 
     def CollectData_mm(self, pages=-1):
+        '''
+        Metoda główna bota : Zbiera informacje za pomocą pozostałych funkcji
+        :param pages: numer strony do której ma pracować, standarodwo '-1', wtedy pobiera całkowitą liczbę stron
+        :return: zwraca listę
+        '''
         list = []
         if self._Connect_wPage(1) == False:
             return list
@@ -88,10 +115,11 @@ class Robot_mm:
         return list
 
 if __name__ == '__main__':
+    # testy
     rb = Robot_mm()
     x = rb.GetPagesCount()
     print(x)
-    list = rb.CollectData_mm()
+    list = rb.CollectData_mm(2)
     print(len(list))
     print(list)
 
