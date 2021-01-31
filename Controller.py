@@ -36,9 +36,13 @@ class Controller:
             else:
                 self.list_euro = self.rb_euro.CollectData_euro(pages)
 
-        list= self.list_mm + self.list_euro
-        return list
+        if self._shops[key] == 5:
+            return self.list_euro
+        if self._shops[key] == 10:
+            return self.list_mm
 
+        list = self.list_mm + self.list_euro
+        return list
 
 
     def MakeExcelFrom_mm(self):
@@ -92,4 +96,5 @@ if __name__ == '__main__':
     list = ctrl.GetList(pages=2)
     print(list)
     print(len(list))
+    #ctrl.MakeExcel()
 

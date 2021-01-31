@@ -143,4 +143,3 @@ if __name__ == '__main__':
     data = pd.DataFrame(list)
     print(data)
     print(data.shape)
-

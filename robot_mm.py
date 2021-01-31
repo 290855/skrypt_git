@@ -16,7 +16,10 @@ class Robot_mm:
         self.url_media_base = "https://mediamarkt.pl"
 
         # Mozilla/5.0 (iPad; CPU OS 6_0 like Mac OS X) AppleWebKit/536.26 (KHTML, like Gecko) Version/6.0 Mobile/10A5355d Safari/8536.25
+        # Mozilla/5.0 (Windows; U; Windows NT 6.1; en-US) AppleWebKit/533.19.4 (KHTML, like Gecko) Version/5.0.2 Safari/533.18.5
+
         ua = UserAgent()
+
         self.header = {'User-Agent': str(ua.safari)}
 
     def GetPagesCount(self) -> int:
@@ -56,6 +59,7 @@ class Robot_mm:
             featuresTech = param_table[0].find_all("span")
             featuresScr = param_table[1].find_all("span")
             featuresBrand = param_table[8].find_all("a")
+
             matrixType = str(featuresTech[1].text)
             smartTV = str(featuresTech[3].text)
             size = str(featuresScr[1].text)
@@ -64,6 +68,7 @@ class Robot_mm:
             brand = str(featuresBrand[0].text)
             title = soup.find("h1", {"class" : "b-ofr_headDataTitle"})
             name = str(title.text).replace("Telewizor ", "")
+
             param_price_box = soup.find("div", {"class" : "b-contentSideBox"})
             param_price = param_price_box.find("div", {"class" : "m-priceBox_price"})
             price = str(param_price.text).replace(" ", "").replace(",-zł","").replace("\n", "")
